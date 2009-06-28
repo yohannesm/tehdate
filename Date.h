@@ -59,7 +59,7 @@ class Date {
         // ----
 
         // <your data>
-	T day;
+    	T day;
         T month;
         Month::Month mon;
         T year;
@@ -144,7 +144,64 @@ class Date {
                 tempDays -= 366; // reducing the leap year
             	year +=  (tempDays/365) + 1;  // adding the leap year + remaining years
             	}
-            	
+            
+             day = 1;
+             month = -1; 
+             if(leapyear(year)){
+            	 if(tempDays>365){
+            		 tempDays = 30;
+            		 month = 11;
+            		 --year;
+            	 }
+            	 else if(tempDays==365)
+            	 { 
+            		 tempDays = 30;
+            		 month = 11;
+            	 }
+            	 else{
+            		 for(int i = 0; i < 12; i++)
+            		 {
+            			 if(tempDays >= (tdaemil[i]) && tempDays < (tdaemil[i+1]))
+            			 {
+            				 tempDays -= tdaemil[i];
+            				 month = i;
+            			 }
+
+            		 }
+            	 }
+            	 day = ++tempDays;
+             }
+             else
+             {
+            	 if(tempDays==365)
+            	 { 
+            		 tempDays = 31;
+            		 month = 11;
+            		 --year;
+            	 }
+            	 else{
+            		 while(tempDays>365){
+            			 tempDays-= 365; }
+            		 if(tempDays==365)
+            		 { 
+            			 tempDays = 31;
+            			 month = 11;
+            			 --year;
+            		 }
+            		 else{
+            			 for(int i = 0; i < 12; i++)
+            			 {
+            				 if(tempDays >= (tdaem[i]) && tempDays < (tdaem[i+1]))
+            				 {
+            					 tempDays -= tdaem[i];
+            					 month = i;
+            				 }
+            			 }
+            		 }
+            	 }
+            	 day = tempDays;
+             }
+         	
             if (!valid())
                 throw std::invalid_argument("Date::Date()");}
 
@@ -160,9 +217,70 @@ class Date {
          */
         T to_days () const {
             T days = 0;
-            // <your code>
+         	T tempDays=0;
+         
+             int years = year - 1600;
+             bool leap = false;
+             
+             
+             if(years>=400) //400 years
+             {
+		  tempDays += 146097 * (years/400);
+		  years %= 400;
+		//  cout<<"hitting here1";
+		} 
+		if(years>=100) //100 years
+		{
+		//	cout<<"hitting here2";
+		  tempDays += years/100 * 36524; 
+		  years %= 100;
+		} 
+		if(years>=4) //4 years
+		{
+		  tempDays +=  (std::min(24,(years/4))) * 1461;
+		  years %= 4;
+		//  cout<<"hitting here3";
+		}
+		if(years == 0)
+		  leap=true;
+		else if(years==1) 
+		{ 
+			tempDays +=366;
+		
+		}
+		else{ 	//more than 1 year left			
+			
+			tempDays +=366;
+			years;
+			for(int i = 0; i < 3; i++)
+			{
+				if(years > 1)
+				{
+				  --years;
+				   tempDays +=365; 
+				}
+			}
+              }
+              
+              
+              if(leap)
+              {
+              	tempDays += tdaemil[month-1];
+              	tempDays += day;
+              	
+              
+              }
+              else
+              {
+                  	tempDays += tdaem[month-1];
+              	tempDays += day;
+              }
+              --tempDays;
+            
+            
+            
             assert(days >= 0);
-            return days;}
+            return tempDays;}
 
     public:
         // -----------
@@ -179,6 +297,9 @@ class Date {
          */
         Date (const T& day, const T& month, const T& year) {
             // <your code>
+        	this->day = day;
+        	this->month = month;
+        	this->year = year;
             if (!valid())
                 throw std::invalid_argument("Date::Date()");}
 
@@ -288,6 +409,11 @@ T operator - (const Date<T>& lhs, const Date<T>& rhs) {
 // -----------
 // operator <<
 // -----------
+
+
+
+
+
 
 /**
  * O(1)    in space
