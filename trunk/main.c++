@@ -17,7 +17,7 @@
 
 #include "Date.h"
 #include "TestDate.h"
-
+#define NDEBUG
 // ----
 // main
 // ----

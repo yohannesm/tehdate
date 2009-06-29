@@ -18,7 +18,32 @@
 // ----------
 // namespaces
 // ----------
-namespace Month{
+
+
+
+
+
+
+
+        
+         static const std::string months[] = 
+         {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+         //number of days on each month
+        static const int ndiem[] =   {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+        //total of days after each month
+        static const int tdaem[] =  {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 };
+        //total of days after each month in leap years
+    static const int tdaemil[] = {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 };
+        
+
+        
+namespace Date{
+
+// ----
+// Date
+// ----
+
+    	
         enum Month{
         	dummy, //0
         	Jan, //1
@@ -34,25 +59,15 @@ namespace Month{
         	Nov, //11
         	Dec //12
         };
-        }// end namespace months
-        
-         static const std::string months[] = 
-         {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-         //number of days on each month
-        static const int ndiem[] =   {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-        //total of days after each month
-        static const int tdaem[] =  {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 };
-        //total of days after each month in leap years
-    static const int tdaemil[] = {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 };
-        
-namespace Date {
 
-// ----
-// Date
-// ----
 
 template <typename T>
 class Date {
+
+
+
+    
+
     private:
         // ----
         // data
@@ -61,7 +76,7 @@ class Date {
         // <your data>
     	T day;
         T month;
-        Month::Month mon;
+        Month mon;
         T year;
         T epoch; // starts from 1 1 1600
     private:
@@ -73,20 +88,24 @@ class Date {
          ** this method will be used to check whether
          * the input for the day, month and the year is valid 
          */
+         /**
+         * O(1)    in space
+         * O(1)    in time
+         */
         bool valid () const {
            bool yearOk = (year >= 1600);
              bool monthOk = (month>0 && month <= 12);
                     bool dayOk = false;
                     switch(mon){
-                    case Month::Feb :
+                    case Feb :
                         if(leapYear())
                     	dayOk = (day>0 && day<=29);
                     	else dayOk  = (day>0 && day<=28);
                     	break;
-                    case Month::Apr :
-                    case Month::Jun :
-                    case Month::Sep :
-                    case Month::Nov :
+                    case Apr :
+                    case Jun :
+                    case Sep :
+                    case Nov :
                     	dayOk = (day>0 && day<=30);
                     	break;
                     default:
@@ -97,6 +116,13 @@ class Date {
         	// -----------
                 // leapyear
                 // -----------
+         /**
+         * O(1)    in space
+         * O(1)    in time3
+         * Checks to see if the year is a leap year
+         * @param  year  >= 1600
+         * @throws
+         */
                 bool leapYear() const{
                 assert(year>=1600);
                 bool leap = false;
@@ -111,6 +137,7 @@ class Date {
         // -----------
         // constructor
         // -----------
+        
 
         /**
          * O(1)   in space
@@ -147,7 +174,7 @@ class Date {
             
              day = 1;
              month = -1; 
-             if(leapyear(year)){
+             if(leapYear()){
             	 if(tempDays>365){
             		 tempDays = 30;
             		 month = 11;
@@ -215,6 +242,18 @@ class Date {
          * @return the number of days since 1 Jan 1600, >= 0
          * 1 Jan 1600 -> 0
          */
+     public:
+     
+     
+        Date()
+        {
+            day = 1;
+            month = 1;
+            year = 1600;
+        }
+
+
+
         T to_days () const {
             T days = 0;
          	T tempDays=0;
@@ -227,11 +266,9 @@ class Date {
              {
 		  tempDays += 146097 * (years/400);
 		  years %= 400;
-		//  cout<<"hitting here1";
 		} 
 		if(years>=100) //100 years
 		{
-		//	cout<<"hitting here2";
 		  tempDays += years/100 * 36524; 
 		  years %= 100;
 		} 
@@ -239,7 +276,6 @@ class Date {
 		{
 		  tempDays +=  (std::min(24,(years/4))) * 1461;
 		  years %= 4;
-		//  cout<<"hitting here3";
 		}
 		if(years == 0)
 		  leap=true;
@@ -251,7 +287,6 @@ class Date {
 		else{ 	//more than 1 year left			
 			
 			tempDays +=366;
-			years;
 			for(int i = 0; i < 3; i++)
 			{
 				if(years > 1)
@@ -282,7 +317,7 @@ class Date {
             assert(days >= 0);
             return tempDays;}
 
-    public:
+    
         // -----------
         // constructor
         // -----------
@@ -300,6 +335,7 @@ class Date {
         	this->day = day;
         	this->month = month;
         	this->year = year;
+        	mon = static_cast<Month>(month);
             if (!valid())
                 throw std::invalid_argument("Date::Date()");}
 
@@ -307,82 +343,135 @@ class Date {
         // Date (const Date&);
         // ~Date ();
         // Date& operator = (const Date&);
-
+	
         // -----------
         // operator +=
         // -----------
 
         /**
-         * <your documentation>
+         * adding number of days to a date
          * @param  days the number of days to add (may be negative!)
          * @return the date resulting from adding days
          * @throws std::invalid_argument if the resulting date precedes 1 Jan 1600
          */
         Date& operator += (const T& days) {
-            // <your code>
-            return *this;}
+           
+           T theDays = to_days();
+           
+           const T total = theDays + day;
+           
+           if(total < 0)
+           throw  std:: invalid_argument("Date+= would be before 1 jan 1600");
+           
+           
+           try{
+           *this = Date(total);
+            return *this;
+            }
+            catch (std::invalid_argument& e){
+             throw std::invalid_argument("Date+= would be before 1 jan 1600");
+            }
+            }
 
         // -----------
         // operator -=
         // -----------
 
         /**
-         * <your documentation>
+         * Calculates dates minus days
          * @param  days the number of days to subtract (may be negative!)
          * @return the date resulting from subtracting days
          * @throws std::invalid_argument if the resulting date precedes 1 Jan 1600
          */
         Date& operator -= (const T& days) {
             // <your code>
-            return *this;}
+            
+           T theDays = to_days();
+           
+           const T total = theDays - day;
+           
+           if(total < 0)
+                throw  std:: invalid_argument("Date+= would be before 1 jan 1600");
+           
+           try{
+           *this = Date(total);
+            return *this;
+            }
+            catch (std::invalid_argument& e){
+             throw std::invalid_argument("Date+= would be before 1 jan 1600");
+            }
+            }
 
         // ---------
         // leap_year
         // ---------
 
-        /**
-         * <your documentation>
+         /**
+         * O(1)    in space
+         * O(1)    in time
+         *Checks to ensure it's a leapyear
+         * @param  year  >= 1600
+         * @throws std::invalid_argument if the resulting date is invalid
          */
         bool leap_year () const {
-            // <your code>
-            return false;}
+           bool leap = false;
+        if((year%4)==0){
+              leap = true;
+             if( ((year%100)==0) && !((year%400)==0))
+             leap = false;
+        }
+
+        return leap;
+      }
+//template <typename Z> friend std::ostream& operator ==(const Date<Z>& lhs, const Date<Z>& rhs);
+template <typename Z> friend std::ostream& operator <<(std::ostream& lhs, const Date<Z>& rhs);
             }; // end of class DATE!!!
- 
 
 // -----------
 // operator ==
 // -----------
 
-/**
- * <your documentation>
- */
-template <typename T>
-bool operator == (const Date<T>& lhs, const Date<T>& rhs) {
-    // <your code>
-    return false;}
+        /**
+         * Checks if two dates are equal to one another
+         * @param  lhs a Date
+         * @param  rhs another Date
+         * @return boolean if the dates are equal
+         */
+template <typename Z>
+bool operator ==(const Date<Z>& lhs, const Date<Z>& rhs) {
+    bool check = lhs.to_days() == rhs.to_days();
+    //check = 
+
+    return check;
+    }
 
 // ----------
 // operator <
 // ----------
 
-/**
- * <your documentation>
- */
-template <typename T>
-bool operator < (const Date<T>& lhs, const Date<T>& rhs) {
-    // <your code>
-    return false;}
+        /**
+         * Checks if two dates are less than to one another
+         * @param  lhs a Date to be checked if smaller
+         * @param  rhs another Date
+         * @return boolean if the dates are equal
+         */
+template <typename Z>
+bool operator < (const Date<Z>& lhs, const Date<Z>& rhs) {
+    bool check = lhs.to_days() < rhs.to_days();
+    return check;}
 
 // ----------
 // operator +
 // ----------
 
-/**
- * <your documentation>
- * @throws std::invalid_argument if the resulting date precedes 1 Jan 1600
- */
-template <typename T>
-Date<T> operator + (Date<T> lhs, const T& rhs) {
+        /**
+         * Adds two dates together
+         * @param  lhs a date object
+         * @param  rhs another Date
+         * @return the sum of two dates
+         */
+template <typename Z>
+Date<Z> operator + (Date<Z> lhs, const Z& rhs) {
     return lhs += rhs;}
 
 // ----------
@@ -390,21 +479,25 @@ Date<T> operator + (Date<T> lhs, const T& rhs) {
 // ----------
 
 /**
- * <your documentation>
- * @throws std::invalid_argument if the resulting date precedes 1 Jan 1600
+         * Difference between two dates together
+         * @param  lhs a date object
+         * @param  rhs another Date
+         * @return the difference of two dates
  */
-template <typename T>
-Date<T> operator - (Date<T> lhs, const T& rhs) {
+template <typename Z>
+Date<Z> operator - (Date<Z> lhs, const Z& rhs) {
     return lhs -= rhs;}
 
 /**
- * <your documentation>
- * @return the number of days between the dates (lhs - rhs)
+         * Difference between two dates together
+         * @param  lhs a date object
+         * @param  rhs another Date
+         * @return the difference of two dates
  */
-template <typename T>
-T operator - (const Date<T>& lhs, const Date<T>& rhs) {
+template <typename Z>
+Z operator - (const Date<Z>& lhs, const Date<Z>& rhs) {
     // <your code>
-    return 0;}
+    return lhs.to_days() - rhs.to_days();}
 
 // -----------
 // operator <<
@@ -426,8 +519,9 @@ T operator - (const Date<T>& lhs, const Date<T>& rhs) {
  */
 template <typename T>
 std::ostream& operator << (std::ostream& lhs, const Date<T>& rhs) {
-    // <your code>
-    return lhs << "1 Jan 2008";}
+    
+    return lhs << rhs.day << " " << months[rhs.month -1] << " " << rhs.year;
+    }
 
 } // Date
 
